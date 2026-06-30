@@ -23,24 +23,24 @@ def _get_client() -> gspread.Client:
     return gspread.authorize(creds)
 
 
-def read_sheet_a() -> list[dict]:
+def read_master_sheet() -> list[dict]:
     """
-    Read Sheet A (採購單母體) from SHEET_A_URL env var.
+    Read 採購單母體 from PROCUREMENT_MASTER_SHEET_URL env var.
     Returns list of row dicts keyed by header.
     """
-    url = os.environ.get("SHEET_A_URL", "")
+    url = os.environ.get("PROCUREMENT_MASTER_SHEET_URL", "")
     if not url:
-        raise ValueError("環境變數 SHEET_A_URL 未設定")
+        raise ValueError("環境變數 PROCUREMENT_MASTER_SHEET_URL 未設定")
     client = _get_client()
     sh = client.open_by_url(url)
     ws = sh.get_worksheet(0)
     return ws.get_all_records()
 
 
-def read_sheet_b(url: str) -> list[dict]:
+def read_review_sheet(url: str) -> list[dict]:
     """
-    Read Sheet B (自動化採單審核版) from user-supplied URL.
-    Returns list of row dicts keyed by header row.
+    Read 自動化採單審核版 from user-supplied URL.
+    Returns (data, headers).
     """
     client = _get_client()
     sh = client.open_by_url(url)
@@ -55,7 +55,7 @@ def read_sheet_b(url: str) -> list[dict]:
             break
 
     if header_row_idx is None:
-        raise ValueError("Sheet B 中找不到含有 'ItemSKU' 的標題列")
+        raise ValueError("審核版 Google Sheet 中找不到含有 'ItemSKU' 的標題列")
 
     headers = rows[header_row_idx]
     data = []
@@ -66,9 +66,9 @@ def read_sheet_b(url: str) -> list[dict]:
     return data, headers
 
 
-def build_sku_qty_map(sheet_b_data: list[dict], headers: list[str]) -> dict[str, str]:
+def build_sku_qty_map(review_sheet_data: list[dict], headers: list[str]) -> dict[str, str]:
     """
-    Build {ItemSKU: qty} map from Sheet B.
+    Build {ItemSKU: qty} map from 審核版.
     D column = ItemSKU (index 3), AM column = index 38.
     """
     sku_col = "ItemSKU"
@@ -78,7 +78,7 @@ def build_sku_qty_map(sheet_b_data: list[dict], headers: list[str]) -> dict[str,
     am_header = headers[am_idx] if am_idx < len(headers) else None
 
     result = {}
-    for row in sheet_b_data:
+    for row in review_sheet_data:
         sku = str(row.get(sku_col, "")).strip()
         qty = str(row.get(am_header, "")).strip() if am_header else ""
         if sku:

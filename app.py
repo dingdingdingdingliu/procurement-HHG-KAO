@@ -24,7 +24,7 @@ with tab2:
     from stage2_purchase_order.warehouses import warehouse_names, get_warehouse
 
     with st.form("stage2_form"):
-        sheet_b_url = st.text_input(
+        review_sheet_url = st.text_input(
             "本次下採自動化採單網址（送審版本）",
             placeholder="https://docs.google.com/spreadsheets/d/...",
         )
@@ -39,7 +39,7 @@ with tab2:
 
     if submitted:
         errors = []
-        if not sheet_b_url.strip():
+        if not review_sheet_url.strip():
             errors.append("請輸入自動化採單網址")
         if arrival_date is None:
             errors.append("請選擇到貨日")
@@ -49,12 +49,12 @@ with tab2:
                 st.error(e)
         else:
             try:
-                from stage2_purchase_order.gsheet import read_sheet_b, build_sku_qty_map
+                from stage2_purchase_order.gsheet import read_review_sheet, build_sku_qty_map
                 from stage2_purchase_order.excel_writer import generate_excel
 
                 with st.spinner("讀取 Google Sheet 中..."):
-                    sheet_b_data, headers = read_sheet_b(sheet_b_url.strip())
-                    sku_qty_map = build_sku_qty_map(sheet_b_data, headers)
+                    review_sheet_data, headers = read_review_sheet(review_sheet_url.strip())
+                    sku_qty_map = build_sku_qty_map(review_sheet_data, headers)
 
                 warehouse = get_warehouse(warehouse_name)
 

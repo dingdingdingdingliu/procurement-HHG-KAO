@@ -17,10 +17,10 @@ pip install -r requirements.txt
 
 ```bash
 # macOS / Linux
-export SHEET_A_URL="https://docs.google.com/spreadsheets/d/..."
+export PROCUREMENT_MASTER_SHEET_URL="https://docs.google.com/spreadsheets/d/..."
 
 # Windows PowerShell
-$env:SHEET_A_URL = "https://docs.google.com/spreadsheets/d/..."
+$env:PROCUREMENT_MASTER_SHEET_URL = "https://docs.google.com/spreadsheets/d/..."
 ```
 
 ### 3. 放置 Google Service Account 金鑰
