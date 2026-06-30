@@ -23,6 +23,16 @@ export PROCUREMENT_MASTER_SHEET_URL="https://docs.google.com/spreadsheets/d/..."
 $env:PROCUREMENT_MASTER_SHEET_URL = "https://docs.google.com/spreadsheets/d/..."
 ```
 
+## 命名定義
+
+| 名稱 | 對應業務名稱 | 說明 |
+|------|------------|------|
+| `PROCUREMENT_MASTER_SHEET_URL` | 採購單母體 | 固定的採購品項主表，設定於環境變數 |
+| `review_sheet_url` | 自動化採單審核版 | 每次下採時使用者輸入的 Google Sheet 網址 |
+| `read_master_sheet()` | 讀取採購單母體 | 從環境變數網址讀取採購品項清單 |
+| `read_review_sheet()` | 讀取審核版 | 從使用者輸入網址讀取本次採購數量 |
+| `sku_qty_map` | SKU → 採購數量對照表 | 以 ItemSKU 為 key，AM 欄審核採購量為 value |
+
 ### 3. 放置 Google Service Account 金鑰
 
 將 `.json` 金鑰檔放入 `credentials/` 資料夾（程式會自動搜尋）。
